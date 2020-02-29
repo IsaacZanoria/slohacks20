@@ -25,6 +25,7 @@ def detect_faces(path):
 
     response = client.face_detection(image=image)
     faces = response.face_annotations
+    
 
     # Names of likelihood from google.cloud.vision.enums
     #likelihood_name = ('UNKNOWN', 'VERY_UNLIKELY', 'UNLIKELY', 'POSSIBLE',
@@ -34,16 +35,17 @@ def detect_faces(path):
     faces_bounds = []
     
     for face in faces:
+        
         #print('anger: {}'.format(likelihood_name[face.anger_likelihood]))
         #print('joy: {}'.format(likelihood_name[face.joy_likelihood]))
         #print('surprise: {}'.format(likelihood_name[face.surprise_likelihood]))
 
         vertices = ([(vertex.x, vertex.y)
                     for vertex in face.bounding_poly.vertices])
-
-        #print('face bounds: {}'.format(','.join(vertices)))
         
-        faces_bounds.append(vertices)
+        print(vertices)
+        print(face.landmarking_confidence)
+        faces_bounds.append([vertices, face.landmarking_confidence])
         
     
     if response.error.message:
@@ -52,7 +54,6 @@ def detect_faces(path):
             'https://cloud.google.com/apis/design/errors'.format(
                 response.error.message))
     
-    print(faces_bounds)
     return faces_bounds
         
 faces_path = r"C:\Users\rjsta\OneDrive\Documents\slohacks2020\faces.png"
@@ -61,9 +62,11 @@ bounding_boxes = detect_faces(faces_path)
 
 image = cv2.imread(faces_path)
 
+#color = 0
 for box in bounding_boxes:
-    cv2.rectangle(image, box[0], box[2], (0, 20, 200), 5)
-    
+    if box[1] > .4:
+        cv2.rectangle(image, box[0][0], box[0][2], (0, 20, 200), 5)
+
 cv2.imshow('Caffeine', image)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
