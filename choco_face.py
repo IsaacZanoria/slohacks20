@@ -61,11 +61,19 @@ faces_path = r"C:\Users\rjsta\OneDrive\Documents\slohacks2020\faces.png"
 bounding_boxes = detect_faces(faces_path)
 
 image = cv2.imread(faces_path)
+imgs = []
 
-#color = 0
+
 for box in bounding_boxes:
     if box[1] > .4:
-        cv2.rectangle(image, box[0][0], box[0][2], (0, 20, 200), 5)
+        print(box)
+        #cv2.rectangle(image, box[0], box[2], (0, 20, 200), 5)
+        imgs.append(image[box[0][0][1]:box[0][2][1], box[0][0][0]:box[0][1][0]])
+
+i = 0
+for img in imgs:
+    i+=1
+    cv2.imshow("face %i" % i, img)
 
 cv2.imshow('Caffeine', image)
 cv2.waitKey(0)
