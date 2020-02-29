@@ -7,18 +7,19 @@ dictionary = requests.get(api + "1").json()
 #num_items = dictionary["total"]
 num_items = 25
 for i in dictionary["_embedded"]["notices"][:num_items]:
-	name = i["name"]
-	images = i["_links"]["images"]["href"]
-	dictionary = requests.get(images).json()
-	if len(dictionary["_embedded"]["images"]) > 0:
-		img = dictionary["_embedded"]["images"][0]["_links"]["self"]["href"]
+	try:
+		name = i["name"]
+		img = i["_links"]["thumbnail"]["href"]
 		wget.download(img, "images/{}.png".format(name))
+	except KeyError:
+		pass
 
 for i in range(2, num_items // 100 + 1):
 	dictionary = requests.get(api + str(i)).json()
 	for i in dictionary["_embedded"]["notices"]:
-		name = i["name"]
-		images = i["_links"]["images"]["href"]
-		dictionary = requests.get(images).json()
-		img = dictionary["_embedded"]["images"][0]["_links"]["self"]["href"]
-		wget.download(img, "images/{}.png".format(name))
+		try:
+			name = i["name"]
+			img = i["_links"]["thumbnail"]["href"]
+			wget.download(img, "images/{}.png".format(name))
+		except:
+			pass
