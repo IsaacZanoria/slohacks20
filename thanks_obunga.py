@@ -1,6 +1,7 @@
 import face_recognition
 import cv2
 import numpy as np
+import json
 
 # This is a demo of running face recognition on live video from your webcam. It's a little more complicated than the
 # other example, but it includes some basic performance tweaks to make things run a lot faster:
@@ -16,20 +17,31 @@ video_capture = cv2.VideoCapture(0)
 
 obama_image = face_recognition.load_image_file(r"C:\Users\izack\OneDrive\Documents\GitHub\slohacks20\thanks_obunga_test\obama.jpg")
 obama_face_encoding = face_recognition.face_encodings(obama_image)[0]
+del obama_image
 
 # Load a second sample picture and learn how to recognize it.
 biden_image = face_recognition.load_image_file(r"C:\Users\izack\OneDrive\Documents\GitHub\slohacks20\thanks_obunga_test\biden.jpg")
 biden_face_encoding = face_recognition.face_encodings(biden_image)[0]
+del biden_image
 
 # Create arrays of known face encodings and their names
 known_face_encodings = [
-    obama_face_encoding,
-    biden_face_encoding
 ]
 known_face_names = [
-    "Barack Obama",
-    "Joe Biden"
 ]
+
+def read_db_encodings_json(filename):
+    with open(filename, 'r') as json_file:
+        reconstructed_encodings_dict = json.load(json_file)
+    for item in reconstructed_encodings_dict:
+        reconstructed_encodings_dict[item] = np.asarray(reconstructed_encodings_dict[item])
+    return reconstructed_encodings_dict
+
+foo = read_db_encodings_json(r"C:\Users\izack\OneDrive\Documents\GitHub\slohacks20-heroku\data\db_encoding_jsons\20200301-005158.json")
+
+for item in foo:
+    known_face_names.append(item)
+    known_face_encodings.append(foo[item])
 
 # Initialize some variables
 face_locations = []
